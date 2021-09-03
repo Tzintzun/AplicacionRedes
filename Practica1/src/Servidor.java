@@ -22,7 +22,7 @@ public class Servidor {
     public static int pto = 8000;
     
     
-    public static Informacion recivirInfo(ServerSocket s){
+    public static Informacion recibirInfo(ServerSocket s){
        try{
            Socket info = s.accept();
            ObjectInputStream dis = new ObjectInputStream(info.getInputStream());
@@ -49,7 +49,7 @@ public class Servidor {
         
     }
     
-    public static void recivirArchivo(ServerSocket s2, String archivo,String ruta,long tam){
+    public static void recibirArchivo(ServerSocket s2, String archivo,String ruta,long tam){
         try{
             Socket datos = s2.accept();
             System.out.println("Cliente conectado desde "+datos.getInetAddress()+":"+datos.getPort());
@@ -84,9 +84,9 @@ public class Servidor {
     }
     
     
-    public static void recivir_archivos(ServerSocket s, ServerSocket s2, String ruta){
+    public static void recibir_archivos(ServerSocket s, ServerSocket s2, String ruta){
         
-        Informacion inf = recivirInfo(s);
+        Informacion inf = recibirInfo(s);
         System.out.println("Recibiendo: "+inf.nombres.length + " archivos");
         for (int i = 0; i < inf.nombres.length; i++) {
             System.out.println("\t"+i+". "+ inf.nombres[i] +" "+inf.tamaños[i]+"bytes" );
@@ -97,9 +97,9 @@ public class Servidor {
                 f.mkdirs();
                 f.setWritable(true);
                 f.setReadable(true);
-                recivir_archivos(s,s2,ruta+"\\"+inf.nombres[i]+"\\");
+                recibir_archivos(s,s2,ruta+"\\"+inf.nombres[i]+"\\");
             }else{
-                recivirArchivo(s2,inf.nombres[i],ruta,inf.tamaños[i]);
+                recibirArchivo(s2,inf.nombres[i],ruta,inf.tamaños[i]);
             }
         }
     }
@@ -111,7 +111,9 @@ public class Servidor {
             ServerSocket s2= new ServerSocket(pto+1);
             s2.setReuseAddress(true);
             s.setReuseAddress(true);
+            
             System.out.println("Servidor iniciado esperando por archivos..");
+            
             File f = new File(".\\");
             String ruta = f.getAbsolutePath();
             ruta = ruta + "\\MiUnidad\\";
@@ -119,8 +121,10 @@ public class Servidor {
             f2.mkdirs();
             f2.setWritable(true);
             f2.setReadable(true);
+            
             for(;;){
-                recivir_archivos(s,s2,ruta);
+                
+                recibir_archivos(s,s2,ruta);
                 System.out.println("\n******************************");
                 System.out.println("**** OPERACION COMPLETADA ****");
                 System.out.println("******************************\n");

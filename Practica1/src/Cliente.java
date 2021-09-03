@@ -16,8 +16,13 @@ import javax.swing.JFileChooser;
  * @author david
  */
 public class Cliente {
-    private static int pto = 8000;
-    private static String dir = "localhost";
+    private static int pto;
+    private static String dir;
+    
+    public Cliente(){
+        this.pto = 8000;
+        this.dir = "localhost";
+    }
     
     public static boolean enviarInfo(File[] f){
         try{
@@ -108,7 +113,7 @@ public class Cliente {
     }
     
     public static void main(String[] args){
-        JFileChooser jf = new JFileChooser();
+        /*JFileChooser jf = new JFileChooser();
         jf.setMultiSelectionEnabled(true);
         jf.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         int r = jf.showOpenDialog(null);
@@ -117,7 +122,7 @@ public class Cliente {
             File[] f = jf.getSelectedFiles();
             enviar_archivos(f);
             
-        }
+        }*/
         
         
     }
