@@ -112,7 +112,7 @@ public class Cliente {
         return true;
     }
     
-    public static void main(String[] args){
+    /*public static void main(String[] args){
         /*JFileChooser jf = new JFileChooser();
         jf.setMultiSelectionEnabled(true);
         jf.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -122,10 +122,10 @@ public class Cliente {
             File[] f = jf.getSelectedFiles();
             enviar_archivos(f);
             
-        }*/
+        }
         
         
-    }
+    }*/
     
     
     public static Socket conectar(String dir, int puerto) {

@@ -12,12 +12,25 @@ import javax.swing.JFileChooser;
  * @author Diana Paola
  */
 public class ViewCliente extends javax.swing.JFrame {
-    Cliente cliente = new Cliente();
+    private Cliente cliente = new Cliente();
+    private File[] archivos = new File[0];
     /**
      * Creates new form ViewCliente
      */
     public ViewCliente() {
         initComponents();
+    }
+    
+    public void mostrarArchivos(File[] f1,String tabulacion){
+        
+        for(File f: f1){
+            if(f.isDirectory()){
+                this.jTextAreaFilesSelected.append(tabulacion+f.getName()+"\\ \n");
+                mostrarArchivos(f.listFiles(),tabulacion+"  ");
+            }else{
+                this.jTextAreaFilesSelected.append(tabulacion+f.getName()+"\n");
+            }
+        }
     }
 
     /**
@@ -152,13 +165,23 @@ public class ViewCliente extends javax.swing.JFrame {
            
         if(r == JFileChooser.APPROVE_OPTION){
             File[] f = jf.getSelectedFiles();
-            cliente.enviar_archivos(f);
+            this.archivos=f;
+            this.jTextAreaFilesSelected.setText("");
+            mostrarArchivos(f,"");
+            //cliente.enviar_archivos(f);
             
         }
     }//GEN-LAST:event_jButtonSelectFilesActionPerformed
 
     private void jButtonSendFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSendFilesActionPerformed
-        // TODO add your handling code here:
+        if(archivos.length == 0){
+            this.jTextAreaFilesSelected.setText(null);
+            this.jTextAreaFilesSelected.setText("No hay archivos seleccionados para enviar");
+        }else{
+            cliente.enviar_archivos(archivos);
+            archivos=new File[0];
+            System.gc();
+        }
     }//GEN-LAST:event_jButtonSendFilesActionPerformed
 
     /**
@@ -192,6 +215,7 @@ public class ViewCliente extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new ViewCliente().setVisible(true);
+                
             }
         });
     }
