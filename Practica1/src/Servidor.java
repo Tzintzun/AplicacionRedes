@@ -1,4 +1,5 @@
 
+import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -20,12 +21,13 @@ import java.net.Socket;
 public class Servidor {
     
     public static int pto = 8000;
+    private Socket cl;
     
     
-    public static Informacion recibirInfo(ServerSocket s){
+    public static Informacion recibirInfo(Socket s){
        try{
-           Socket info = s.accept();
-           ObjectInputStream dis = new ObjectInputStream(info.getInputStream());
+           //Socket info = s.accept();
+           ObjectInputStream dis = new ObjectInputStream(s.getInputStream());
            Object aux;
            String[] nombres = null;
            long[] tam = null;
@@ -36,11 +38,9 @@ public class Servidor {
            if(aux instanceof long[]) tam = (long[])aux;
            aux = dis.readObject();
            if(aux instanceof boolean[]) directorio = (boolean[])aux;
-           
-          
-           
+
            dis.close();
-           info.close();
+           s.close();
            return new Informacion(nombres,tam,directorio);
        }catch(Exception e){
            e.printStackTrace();
@@ -84,9 +84,9 @@ public class Servidor {
     }
     
     
-    public static void recibir_archivos(ServerSocket s, ServerSocket s2, String ruta){
+    public static void recibir_archivos(Socket sc, ServerSocket s2, String ruta){
         
-        Informacion inf = recibirInfo(s);
+        Informacion inf = recibirInfo(sc);
         System.out.println("Recibiendo: "+inf.nombres.length + " archivos");
         for (int i = 0; i < inf.nombres.length; i++) {
             System.out.println("\t"+i+". "+ inf.nombres[i] +" "+inf.tamaños[i]+"bytes" );
@@ -97,7 +97,7 @@ public class Servidor {
                 f.mkdirs();
                 f.setWritable(true);
                 f.setReadable(true);
-                recibir_archivos(s,s2,ruta+"\\"+inf.nombres[i]+"\\");
+                recibir_archivos(sc,s2,ruta+"\\"+inf.nombres[i]+"\\");
             }else{
                 recibirArchivo(s2,inf.nombres[i],ruta,inf.tamaños[i]);
             }
@@ -123,12 +123,26 @@ public class Servidor {
             f2.setReadable(true);
             
             for(;;){
+                Socket sc = s.accept();
+                System.out.println("Cliente conectado desde:"+sc.getInetAddress()+":"+sc.getPort());
+        
+                BufferedInputStream bis = new BufferedInputStream(sc.getInputStream());
+                DataInputStream dis = new DataInputStream(bis);
                 
-                recibir_archivos(s,s2,ruta);
-                System.out.println("\n******************************");
-                System.out.println("**** OPERACION COMPLETADA ****");
-                System.out.println("******************************\n");
-            }
+                int tipo = dis.readInt();
+                switch(tipo){
+                        //case 0 = oprimir boton sendFiles
+                    case 0: System.out.println("Server: case send files to server");
+                        recibir_archivos(sc,s2,ruta);
+                        System.out.println("\n******************************");
+                        System.out.println("**** OPERACION COMPLETADA ****");
+                        System.out.println("******************************\n");
+                        break;
+                    case 1:
+                        break;
+                }
+                
+            } //end For
             
             
         }catch(Exception e){

@@ -1,4 +1,5 @@
 
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -16,17 +17,37 @@ import javax.swing.JFileChooser;
  * @author david
  */
 public class Cliente {
-    private static int pto;
-    private static String dir;
+    private int pto;
+    private String dir;
+    private Socket cl;
+    BufferedOutputStream bos;
+    DataOutputStream dos;
     
     public Cliente(){
         this.pto = 8000;
         this.dir = "localhost";
     }
     
-    public static boolean enviarInfo(File[] f){
+    public void createConnection(){
         try{
-            Socket cl = conectar(dir,pto);
+           cl = new Socket(dir, pto);
+           System.out.println("Cliente conectado al server \n "); 
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        
+    }
+    
+    public boolean enviarInfo(File[] f){
+        try{
+            //Socket cl = conectar(dir,pto);
+            createConnection();
+            bos = new BufferedOutputStream(cl.getOutputStream());
+            dos = new DataOutputStream(bos);
+
+            dos.writeInt(0);    //enviamos un 0 al server que significa enviar archivos
+            dos.flush();
+            
             int tam = f.length;
             String[] nombres = new String[tam];
             boolean[] directorio = new boolean[tam];
@@ -63,7 +84,7 @@ public class Cliente {
         
     }
     
-    public static boolean enviarArchivo(File f){
+    public boolean enviarArchivo(File f){
         try{
             Socket cl2 = conectar(dir,pto+1);
             DataOutputStream dos = new DataOutputStream(cl2.getOutputStream());
@@ -93,7 +114,7 @@ public class Cliente {
             return false;
         }
     }
-    public static boolean enviar_archivos(File[] f){
+    public boolean enviar_archivos(File[] f){
         if(!enviarInfo(f)){
             return false;
         }
@@ -128,7 +149,8 @@ public class Cliente {
     }*/
     
     
-    public static Socket conectar(String dir, int puerto) {
+    
+    public Socket conectar(String dir, int puerto) {
         Socket socket;
         for(;;){
             try{
