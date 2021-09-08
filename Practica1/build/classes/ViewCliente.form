@@ -179,6 +179,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Descargar archivos de servidor"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButtonDownloadFilesActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

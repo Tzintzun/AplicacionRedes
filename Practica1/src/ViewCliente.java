@@ -95,6 +95,11 @@ public class ViewCliente extends javax.swing.JFrame {
         jButtonCreateDirectory.setText("Crear nueva carpeta");
 
         jButtonDownloadFiles.setText("Descargar archivos de servidor");
+        jButtonDownloadFiles.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDownloadFilesActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -183,6 +188,12 @@ public class ViewCliente extends javax.swing.JFrame {
             System.gc();
         }
     }//GEN-LAST:event_jButtonSendFilesActionPerformed
+
+    private void jButtonDownloadFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDownloadFilesActionPerformed
+        File f = new File("Mi\\");
+        JFileChooser jfc = new JFileChooser(f);
+        jfc.showOpenDialog(null);
+    }//GEN-LAST:event_jButtonDownloadFilesActionPerformed
 
     /**
      * @param args the command line arguments
