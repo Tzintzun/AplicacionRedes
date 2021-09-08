@@ -22,9 +22,8 @@ public class ClasePrueba {
            
         if(r == JFileChooser.APPROVE_OPTION){
             File[] f = jf.getSelectedFiles();
-            System.out.println(f[0].getParent());
-            Compresor c = new Compresor();
-            c.comprimir(f, ".\\temp\\comprimido.zip");
+            System.out.println(f[0].getAbsolutePath());
+           
             
         }
     }

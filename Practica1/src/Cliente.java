@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.logging.Level;
@@ -37,17 +38,26 @@ public class Cliente {
         }
         
     }
-    
-    public boolean enviarInfo(File[] f){
+    public void instruccion(int i){
+        
         try{
-            //Socket cl = conectar(dir,pto);
             createConnection();
             bos = new BufferedOutputStream(cl.getOutputStream());
             dos = new DataOutputStream(bos);
 
             dos.writeInt(0);    //enviamos un 0 al server que significa enviar archivos
             dos.flush();
+            bos.flush();
+            dos.close();
+            bos.close();
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    public boolean enviarInfo(File[] f){
+        try{
             
+            cl = conectar(dir,pto);
             int tam = f.length;
             String[] nombres = new String[tam];
             boolean[] directorio = new boolean[tam];
@@ -132,7 +142,82 @@ public class Cliente {
         }
         return true;
     }
-    
+    public void recibirArchivo( String archivo,String ruta,long tam){
+        try{
+            Socket datos = conectar(dir,pto+1);
+            System.out.println("Cliente conectado desde "+datos.getInetAddress()+":"+datos.getPort());
+            
+            DataInputStream dis = new DataInputStream(datos.getInputStream());
+            DataOutputStream dos = new DataOutputStream(new FileOutputStream(ruta +"\\"+ archivo));
+            System.out.println("Comienza descarga del archivo \""+archivo+"\" de "+tam+" bytes\n\n");
+            System.out.println("En la ruta \"" + ruta +"\"");
+            
+            long recibidos = 0;
+            int l=0,porcentaje=0;
+            
+            while(recibidos<tam){
+                byte[] b = new byte[1500];
+                l = dis.read(b);
+                System.out.println("leidos: "+l);
+                dos.write(b,0,l);
+                dos.flush();
+                recibidos = recibidos + l;
+                porcentaje = (int)((recibidos*100)/tam);
+                System.out.print("\rRecibido el "+ porcentaje +" % del archivo");
+            }//while
+            System.out.println("Archivo recibido..\n\n");
+            dos.close();
+            dis.close();
+            datos.close();
+            
+            
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    public void recibir_archivo(){
+        File f = new File(".\\Descargas\\");
+        if(!f.exists()){
+            f.mkdirs();
+        }
+        
+        JFileChooser jf = new JFileChooser(f);
+        jf.setMultiSelectionEnabled(false);
+        jf.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int r = jf.showOpenDialog(null);
+           
+        if(r == JFileChooser.APPROVE_OPTION){
+            f = jf.getSelectedFile();
+        }else{
+            return;
+        }
+        try{
+            Socket conexion = conectar(dir,pto);
+            System.out.println("Conectado con el servidor");
+            DataInputStream dis = new DataInputStream(conexion.getInputStream());
+            bos = new BufferedOutputStream(conexion.getOutputStream());
+            dos = new DataOutputStream(bos);
+            
+            dos.flush();
+            dos.writeInt(1);
+            System.out.println("Instruccion enviada");
+            String nombre = dis.readUTF();
+            long tamaño = dis.readLong();
+            System.out.println("Informacion Recivida");
+            dos.flush();
+            bos.flush();
+            dis.close();
+            dos.close();
+            bos.close();
+            
+            recibirArchivo(nombre,f.getAbsolutePath(),tamaño);
+            
+            
+        
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
     /*public static void main(String[] args){
         /*JFileChooser jf = new JFileChooser();
         jf.setMultiSelectionEnabled(true);

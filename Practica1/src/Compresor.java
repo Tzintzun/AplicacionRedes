@@ -67,5 +67,10 @@ public class Compresor {
         return null;
     }
     
+    public File comprimir(String carpeta,String nombre){
+        File f = new File(".\\"+carpeta+"\\");
+        return comprimir(f.listFiles(),nombre);
+    }
+    
     
 }

@@ -183,6 +183,7 @@ public class ViewCliente extends javax.swing.JFrame {
             this.jTextAreaFilesSelected.setText(null);
             this.jTextAreaFilesSelected.setText("No hay archivos seleccionados para enviar");
         }else{
+            cliente.instruccion(0);
             cliente.enviar_archivos(archivos);
             archivos=new File[0];
             System.gc();
@@ -190,9 +191,11 @@ public class ViewCliente extends javax.swing.JFrame {
     }//GEN-LAST:event_jButtonSendFilesActionPerformed
 
     private void jButtonDownloadFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDownloadFilesActionPerformed
-        File f = new File("Mi\\");
+        /*File f = new File("Mi\\");
         JFileChooser jfc = new JFileChooser(f);
-        jfc.showOpenDialog(null);
+        jfc.showOpenDialog(null);*/
+        
+        cliente.recibir_archivo();
     }//GEN-LAST:event_jButtonDownloadFilesActionPerformed
 
     /**

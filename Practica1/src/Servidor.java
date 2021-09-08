@@ -3,10 +3,15 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -24,10 +29,10 @@ public class Servidor {
     private Socket cl;
     
     
-    public static Informacion recibirInfo(Socket s){
+    public static Informacion recibirInfo(ServerSocket s){
        try{
-           //Socket info = s.accept();
-           ObjectInputStream dis = new ObjectInputStream(s.getInputStream());
+           Socket info = s.accept();
+           ObjectInputStream dis = new ObjectInputStream(info.getInputStream());
            Object aux;
            String[] nombres = null;
            long[] tam = null;
@@ -38,9 +43,9 @@ public class Servidor {
            if(aux instanceof long[]) tam = (long[])aux;
            aux = dis.readObject();
            if(aux instanceof boolean[]) directorio = (boolean[])aux;
-
+           
            dis.close();
-           s.close();
+           info.close();
            return new Informacion(nombres,tam,directorio);
        }catch(Exception e){
            e.printStackTrace();
@@ -84,7 +89,7 @@ public class Servidor {
     }
     
     
-    public static void recibir_archivos(Socket sc, ServerSocket s2, String ruta){
+    public static void recibir_archivos(ServerSocket sc, ServerSocket s2, String ruta){
         
         Informacion inf = recibirInfo(sc);
         System.out.println("Recibiendo: "+inf.nombres.length + " archivos");
@@ -103,7 +108,56 @@ public class Servidor {
             }
         }
     }
-    
+    public static boolean enviarArchivo(File f, Socket cl2){
+        try{
+            
+            DataOutputStream dos = new DataOutputStream(cl2.getOutputStream());
+            DataInputStream dis = new DataInputStream(new FileInputStream(f));
+            System.out.println("Enviando el archivo \"" +f.getName()+"\": ");
+            long tamañoActual = f.length();
+            long enviados = 0;
+            int porcentaje=0;
+            int l=0;
+            while(enviados<tamañoActual){
+                byte[] b = new byte[1500];
+                l=dis.read(b);
+                System.out.println("enviados: "+l);
+                dos.write(b,0,l);
+                dos.flush();
+                enviados = enviados + l;
+                porcentaje = (int)((enviados*100)/tamañoActual);
+                System.out.print("\rEnviado el "+porcentaje+" % del archivo");
+            }//while
+            System.out.println("\nArchivo enviado..\n\n");
+            cl2.close();
+            dos.close();
+            dis.close();
+            return true;
+        }catch(Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public static void enviar_archivo(Socket sc,ServerSocket s2,String directorio){
+        Compresor c = new Compresor();
+        Date fecha = new Date();
+        File f = c.comprimir(directorio, fecha.toString()+".zip");
+        System.out.println("Comprimiendo Archivo...");
+        try {
+            DataOutputStream dos = new DataOutputStream(sc.getOutputStream());
+            dos.writeUTF(f.getName());
+            dos.flush();
+            dos.writeLong(f.length());
+            System.out.println("Enviando datos del archivo");
+            dos.close();
+            enviarArchivo(f,s2.accept());
+            
+            
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+    }
     
     public static void main(String[] args){
         try{
@@ -129,16 +183,20 @@ public class Servidor {
                 BufferedInputStream bis = new BufferedInputStream(sc.getInputStream());
                 DataInputStream dis = new DataInputStream(bis);
                 
-                int tipo = dis.readInt();
+                int tipo = -1;
+                tipo = dis.readInt();
+                dis.close();
+                sc.close(); // 
                 switch(tipo){
                         //case 0 = oprimir boton sendFiles
                     case 0: System.out.println("Server: case send files to server");
-                        recibir_archivos(sc,s2,ruta);
+                        recibir_archivos(s,s2,ruta);
                         System.out.println("\n******************************");
                         System.out.println("**** OPERACION COMPLETADA ****");
                         System.out.println("******************************\n");
                         break;
-                    case 1:
+                    case 1:System.out.println("Server: case send files to client");
+                        //enviar_archivo(sc,s2,"MiUnidad");
                         break;
                 }
                 
