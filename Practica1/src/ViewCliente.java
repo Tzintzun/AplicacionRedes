@@ -1,5 +1,11 @@
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
+import javax.swing.JList;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -14,6 +20,7 @@ import javax.swing.JFileChooser;
 public class ViewCliente extends javax.swing.JFrame {
     private Cliente cliente = new Cliente();
     private File[] archivos = new File[0];
+    private JList<String> serverFileList = new JList<>();
     /**
      * Creates new form ViewCliente
      */
@@ -32,6 +39,17 @@ public class ViewCliente extends javax.swing.JFrame {
             }
         }
     }
+    
+    public void showFilesInServer() throws IOException{
+        ArrayList <String> listFilesInServer = new ArrayList();
+        listFilesInServer = cliente.getServerArchivos();
+        
+        DefaultListModel listModel = new DefaultListModel();
+        for (int i = 0; i < listFilesInServer.size(); i++) {
+            listModel.addElement(listFilesInServer.get(i));
+        }
+        jListFilesInServer.setModel(listModel);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -47,13 +65,13 @@ public class ViewCliente extends javax.swing.JFrame {
         jButtonSelectFiles = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextAreaFilesSelected = new javax.swing.JTextArea();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
         jButtonSelectFilesServer = new javax.swing.JButton();
         jButtonSendFiles = new javax.swing.JButton();
         jButtonDeleteFiles = new javax.swing.JButton();
         jButtonCreateDirectory = new javax.swing.JButton();
         jButtonDownloadFiles = new javax.swing.JButton();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jListFilesInServer = new javax.swing.JList<>();
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setText("Drive simulator ");
@@ -75,11 +93,12 @@ public class ViewCliente extends javax.swing.JFrame {
         jTextAreaFilesSelected.setRows(5);
         jScrollPane1.setViewportView(jTextAreaFilesSelected);
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
-
         jButtonSelectFilesServer.setText("Seleccionar archivos del servidor");
+        jButtonSelectFilesServer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonSelectFilesServerActionPerformed(evt);
+            }
+        });
 
         jButtonSendFiles.setText("Subir archivos");
         jButtonSendFiles.setToolTipText("");
@@ -101,6 +120,8 @@ public class ViewCliente extends javax.swing.JFrame {
             }
         });
 
+        jScrollPane3.setViewportView(jListFilesInServer);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -118,13 +139,15 @@ public class ViewCliente extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(63, 63, 63)
                         .addComponent(jButtonCreateDirectory)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 92, Short.MAX_VALUE)
                         .addComponent(jButtonDownloadFiles)
-                        .addGap(24, 24, 24)))
-                .addGap(30, 30, 30))
+                        .addGap(54, 54, 54))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(62, 62, 62)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel2)
@@ -147,7 +170,7 @@ public class ViewCliente extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 187, Short.MAX_VALUE)
-                    .addComponent(jScrollPane2))
+                    .addComponent(jScrollPane3))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtonDeleteFiles)
@@ -198,6 +221,16 @@ public class ViewCliente extends javax.swing.JFrame {
         cliente.recibir_archivo();
     }//GEN-LAST:event_jButtonDownloadFilesActionPerformed
 
+    private void jButtonSelectFilesServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSelectFilesServerActionPerformed
+        // TODO add your handling code here:
+        cliente.instruccion(2);
+        try {
+            showFilesInServer();
+        } catch (IOException ex) {
+            Logger.getLogger(ViewCliente.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jButtonSelectFilesServerActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -243,9 +276,9 @@ public class ViewCliente extends javax.swing.JFrame {
     private javax.swing.JButton jButtonSendFiles;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JList<String> jListFilesInServer;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextArea jTextAreaFilesSelected;
     // End of variables declaration//GEN-END:variables
 }

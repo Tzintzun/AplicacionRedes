@@ -1,12 +1,15 @@
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -142,6 +145,29 @@ public class Cliente {
         }
         return true;
     }
+    
+    public ArrayList <String> getServerArchivos() throws IOException{
+        ArrayList <String> arrayFilesInServer = new ArrayList();
+        
+        cl = conectar(dir,pto);
+        
+        BufferedInputStream bis = new BufferedInputStream(cl.getInputStream());
+        DataInputStream dis = new DataInputStream(bis);
+            
+        int totFiles = dis.readInt();
+        String nameFile = "";
+        for (int i = 0; i < totFiles; i++) {
+            nameFile = dis.readUTF();
+            arrayFilesInServer.add(nameFile);
+        } 
+        bis.close();
+        dis.close();
+        
+        System.out.println("Lista recibida " );
+        
+        return arrayFilesInServer;
+    }
+    
     public void recibirArchivo( String archivo,String ruta,long tam){
         try{
             Socket datos = conectar(dir,pto+1);

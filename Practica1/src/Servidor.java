@@ -1,5 +1,6 @@
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -166,6 +167,37 @@ public class Servidor {
         
     }
     
+    public static void getFilesFromServer(ServerSocket s){
+        String currentRoute= new File("").getAbsolutePath();
+        String serverRoute= currentRoute + "/MiUnidad";
+        File directoryServer= new File(serverRoute);
+        
+        File[] listFilesInServer= directoryServer.listFiles(); 
+        try {
+            Socket sc = s.accept();
+            
+            DataOutputStream dos = new DataOutputStream(sc.getOutputStream());
+            
+            dos.writeInt(listFilesInServer.length);
+            dos.flush(); 
+            
+            String typeOfFile;
+            for (int i = 0; i < listFilesInServer.length; i++) {
+                if(listFilesInServer[i].isDirectory())
+                    typeOfFile = "Directory: ";
+                else
+                    typeOfFile = "File: ";
+                dos.writeUTF(typeOfFile + listFilesInServer[i].getName());
+                dos.flush();
+            }
+            System.out.println("Sending files of server");
+            dos.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        
+    }
+    
     public static void main(String[] args){
         try{
             ServerSocket s = new ServerSocket(pto);
@@ -190,20 +222,29 @@ public class Servidor {
                 BufferedInputStream bis = new BufferedInputStream(sc.getInputStream());
                 DataInputStream dis = new DataInputStream(bis);
                 
+                //BufferedOutputStream bos = new BufferedOutputStream(sc.getOutputStream());
+                //DataOutputStream dos = new DataOutputStream(bos);
+                
                 int tipo = -1;
                 tipo = dis.readInt();
                 dis.close();
                 sc.close(); // 
                 switch(tipo){
                         //case 0 = oprimir boton sendFiles
-                    case 0: System.out.println("Server: case send files to server");
+                    case 0: 
+                        System.out.println("Server: case send files to server");
                         recibir_archivos(s,s2,ruta);
                         System.out.println("\n******************************");
                         System.out.println("**** OPERACION COMPLETADA ****");
                         System.out.println("******************************\n");
                         break;
-                    case 1:System.out.println("Server: case send files to client");
+                    case 1:
+                        System.out.println("Server: case send files to client");
                         enviar_archivo(s,s2,"MiUnidad");
+                        break;
+                    case 2:     //muestra la lista de files en el SEREVER
+                        System.out.println("Server: Mostrar lista ar archivos");
+                        getFilesFromServer(s);
                         break;
                 }
                 
