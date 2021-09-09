@@ -194,7 +194,7 @@ public class ViewCliente extends javax.swing.JFrame {
         /*File f = new File("Mi\\");
         JFileChooser jfc = new JFileChooser(f);
         jfc.showOpenDialog(null);*/
-        
+        cliente.instruccion(1);
         cliente.recibir_archivo();
     }//GEN-LAST:event_jButtonDownloadFilesActionPerformed
 

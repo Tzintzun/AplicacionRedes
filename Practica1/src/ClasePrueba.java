@@ -1,5 +1,6 @@
 
 import java.io.File;
+import java.util.Date;
 import javax.swing.JFileChooser;
 
 /*
@@ -15,7 +16,7 @@ import javax.swing.JFileChooser;
 public class ClasePrueba {
     
     public static void main(String[] args){
-        JFileChooser jf = new JFileChooser();
+        /*JFileChooser jf = new JFileChooser();
         jf.setMultiSelectionEnabled(true);
         jf.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         int r = jf.showOpenDialog(null);
@@ -25,7 +26,10 @@ public class ClasePrueba {
             System.out.println(f[0].getAbsolutePath());
            
             
-        }
+        }*/
+        
+        Date fecha=new Date();
+        System.out.println(fecha.toString().replace(':', '_'));
     }
     
 }

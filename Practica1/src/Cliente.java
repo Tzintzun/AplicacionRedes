@@ -45,7 +45,7 @@ public class Cliente {
             bos = new BufferedOutputStream(cl.getOutputStream());
             dos = new DataOutputStream(bos);
 
-            dos.writeInt(0);    //enviamos un 0 al server que significa enviar archivos
+            dos.writeInt(i);    //enviamos un 0 al server que significa enviar archivos
             dos.flush();
             bos.flush();
             dos.close();
@@ -193,22 +193,11 @@ public class Cliente {
         }
         try{
             Socket conexion = conectar(dir,pto);
-            System.out.println("Conectado con el servidor");
             DataInputStream dis = new DataInputStream(conexion.getInputStream());
-            bos = new BufferedOutputStream(conexion.getOutputStream());
-            dos = new DataOutputStream(bos);
-            
-            dos.flush();
-            dos.writeInt(1);
-            System.out.println("Instruccion enviada");
             String nombre = dis.readUTF();
             long tamaño = dis.readLong();
             System.out.println("Informacion Recivida");
-            dos.flush();
-            bos.flush();
-            dis.close();
-            dos.close();
-            bos.close();
+            
             
             recibirArchivo(nombre,f.getAbsolutePath(),tamaño);
             

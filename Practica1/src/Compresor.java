@@ -53,7 +53,7 @@ public class Compresor {
     public File comprimir(File[] f, String nombreZip){
         
         try {
-            File crudo = new File(nombreZip);
+            File crudo = new File(".\\temp\\"+nombreZip);
             FileOutputStream archivo = new FileOutputStream(crudo);
             ZipOutputStream zip = new ZipOutputStream(archivo);
             CrearComprimido(f,"",zip);

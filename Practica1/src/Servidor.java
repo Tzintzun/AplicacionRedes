@@ -112,8 +112,9 @@ public class Servidor {
         try{
             
             DataOutputStream dos = new DataOutputStream(cl2.getOutputStream());
-            DataInputStream dis = new DataInputStream(new FileInputStream(f));
+            DataInputStream dis = new DataInputStream(new FileInputStream(f.getAbsolutePath()));
             System.out.println("Enviando el archivo \"" +f.getName()+"\": ");
+            
             long tamañoActual = f.length();
             long enviados = 0;
             int porcentaje=0;
@@ -138,20 +139,26 @@ public class Servidor {
             return false;
         }
     }
-    public static void enviar_archivo(Socket sc,ServerSocket s2,String directorio){
+    public static void enviar_archivo(ServerSocket s,ServerSocket s2,String directorio){
         Compresor c = new Compresor();
         Date fecha = new Date();
-        File f = c.comprimir(directorio, fecha.toString()+".zip");
+        String fch = fecha.toString().replace(':','-');
+        
+        File f = c.comprimir(directorio, fch+".zip");
+        
         System.out.println("Comprimiendo Archivo...");
         try {
+           
+            Socket sc = s.accept();
             DataOutputStream dos = new DataOutputStream(sc.getOutputStream());
             dos.writeUTF(f.getName());
             dos.flush();
             dos.writeLong(f.length());
             System.out.println("Enviando datos del archivo");
             dos.close();
+            System.out.println(f.getAbsolutePath());
             enviarArchivo(f,s2.accept());
-            
+            f.delete();
             
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -196,7 +203,7 @@ public class Servidor {
                         System.out.println("******************************\n");
                         break;
                     case 1:System.out.println("Server: case send files to client");
-                        //enviar_archivo(sc,s2,"MiUnidad");
+                        enviar_archivo(s,s2,"MiUnidad");
                         break;
                 }
                 
