@@ -202,26 +202,21 @@ public class Servidor {
     public static void deleteFiles(String nombre, String dir) {
        
         System.out.println("name file to delete: " + nombre);
-        File carpeta_servidor= new File(dir);
+        File serverDirectory = new File(dir);
         
         
-        File[] lista_archivos= carpeta_servidor.listFiles(); 
+        File[] arrFilesToDelete= serverDirectory.listFiles(); 
         
-        for(File archivo : lista_archivos) {
+        for(File archivo : arrFilesToDelete) {
             if(archivo.getName().equals(nombre)) {
                 if(archivo.isDirectory()){
-                    System.out.println("deleting directory");
-                    File [] Dir_contenido = archivo.listFiles();
+                    File [] contentDirectory = archivo.listFiles();
                     
-                    for(File Dir_archi : Dir_contenido){
+                    for(File Dir_archi : contentDirectory){
                         deleteFiles(Dir_archi.getName(), dir + "\\" + archivo.getName());
                     }
-
-                }
-                
-                System.out.println("Archivo eliminado: " + nombre);
-                archivo.delete();
-                
+                }                
+                archivo.delete();                
             }
         }
     }
@@ -297,9 +292,11 @@ public class Servidor {
                         System.out.println("Server: Mostrar lista ar archivos");
                         getFilesFromServer(s);
                         break;
-                    case 3:
+                    case 3:     //this case is to delete files
                         System.out.println("Server: delete files");   
                         filesSelectedToDelete(s);
+                        break;
+                    case 4:
                         break;
                 }
                 

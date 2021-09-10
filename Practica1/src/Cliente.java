@@ -224,7 +224,7 @@ public class Cliente {
             DataInputStream dis = new DataInputStream(conexion.getInputStream());
             String nombre = dis.readUTF();
             long tamaño = dis.readLong();
-            System.out.println("Informacion Recivida");
+            System.out.println("Informacion Recibida");
             
             
             recibirArchivo(nombre,f.getAbsolutePath(),tamaño);
@@ -244,12 +244,12 @@ public class Cliente {
         
         dos.writeInt(archivos.size());
         for(String archivo: archivos) {
-            System.out.println("name archivo:" + archivo);
+            //System.out.println("name archivo:" + archivo);
             dos.writeUTF(archivo);
         }
         dos.flush();
         
-        System.out.println("Eliminando...");
+        System.out.println("Files deleted");
         dos.close();
         cl.close();
     }
