@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -164,6 +165,7 @@ public class Cliente {
         dis.close();
         
         System.out.println("Lista recibida " );
+        cl.close();
         
         return arrayFilesInServer;
     }
@@ -233,6 +235,25 @@ public class Cliente {
             e.printStackTrace();
         }
     }
+    
+    public void deleteFiles(List<String> archivos) throws IOException{
+        cl = conectar(dir,pto);
+        
+        bos = new BufferedOutputStream(cl.getOutputStream());
+        dos = new DataOutputStream(bos);
+        
+        dos.writeInt(archivos.size());
+        for(String archivo: archivos) {
+            System.out.println("name archivo:" + archivo);
+            dos.writeUTF(archivo);
+        }
+        dos.flush();
+        
+        System.out.println("Eliminando...");
+        dos.close();
+        cl.close();
+    }
+    
     /*public static void main(String[] args){
         /*JFileChooser jf = new JFileChooser();
         jf.setMultiSelectionEnabled(true);

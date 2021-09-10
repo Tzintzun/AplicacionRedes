@@ -1,11 +1,13 @@
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -20,7 +22,6 @@ import javax.swing.JList;
 public class ViewCliente extends javax.swing.JFrame {
     private Cliente cliente = new Cliente();
     private File[] archivos = new File[0];
-    private JList<String> serverFileList = new JList<>();
     /**
      * Creates new form ViewCliente
      */
@@ -93,7 +94,7 @@ public class ViewCliente extends javax.swing.JFrame {
         jTextAreaFilesSelected.setRows(5);
         jScrollPane1.setViewportView(jTextAreaFilesSelected);
 
-        jButtonSelectFilesServer.setText("Seleccionar archivos del servidor");
+        jButtonSelectFilesServer.setText("Seleccionar o ver archivos del servidor");
         jButtonSelectFilesServer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButtonSelectFilesServerActionPerformed(evt);
@@ -110,6 +111,11 @@ public class ViewCliente extends javax.swing.JFrame {
 
         jButtonDeleteFiles.setText("Eliminar archivos");
         jButtonDeleteFiles.setToolTipText("");
+        jButtonDeleteFiles.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonDeleteFilesActionPerformed(evt);
+            }
+        });
 
         jButtonCreateDirectory.setText("Crear nueva carpeta");
 
@@ -131,7 +137,7 @@ public class ViewCliente extends javax.swing.JFrame {
                 .addComponent(jButtonSelectFiles)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButtonSelectFilesServer)
-                .addGap(55, 55, 55))
+                .addGap(45, 45, 45))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -145,8 +151,8 @@ public class ViewCliente extends javax.swing.JFrame {
                         .addComponent(jButtonDownloadFiles)
                         .addGap(54, 54, 54))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(62, 62, 62)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(38, 38, 38)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -230,6 +236,20 @@ public class ViewCliente extends javax.swing.JFrame {
             Logger.getLogger(ViewCliente.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButtonSelectFilesServerActionPerformed
+
+    private void jButtonDeleteFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonDeleteFilesActionPerformed
+        if(jListFilesInServer.getSelectedValuesList().isEmpty()){
+            JOptionPane.showMessageDialog(null, "Error. Selecciona un archivo para eliminar");
+        }else{
+            List<String> filesSelectedToDelete = jListFilesInServer.getSelectedValuesList();
+            cliente.instruccion(3);
+            try {
+                cliente.deleteFiles(filesSelectedToDelete);                    
+            } catch (IOException ex) {
+                System.out.println("Error delete");
+            }
+        }
+    }//GEN-LAST:event_jButtonDeleteFilesActionPerformed
 
     /**
      * @param args the command line arguments

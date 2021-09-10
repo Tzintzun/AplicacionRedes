@@ -181,13 +181,14 @@ public class Servidor {
             dos.writeInt(listFilesInServer.length);
             dos.flush(); 
             
-            String typeOfFile;
+            //String typeOfFile;
             for (int i = 0; i < listFilesInServer.length; i++) {
-                if(listFilesInServer[i].isDirectory())
+                /*if(listFilesInServer[i].isDirectory())
                     typeOfFile = "Directory: ";
                 else
                     typeOfFile = "File: ";
-                dos.writeUTF(typeOfFile + listFilesInServer[i].getName());
+                dos.writeUTF(typeOfFile + listFilesInServer[i].getName());*/
+                dos.writeUTF(listFilesInServer[i].getName());
                 dos.flush();
             }
             System.out.println("Sending files of server");
@@ -197,6 +198,56 @@ public class Servidor {
         }
         
     }
+    
+    public static void deleteFiles(String nombre, String dir) {
+       
+        System.out.println("name file to delete: " + nombre);
+        File carpeta_servidor= new File(dir);
+        
+        
+        File[] lista_archivos= carpeta_servidor.listFiles(); 
+        
+        for(File archivo : lista_archivos) {
+            if(archivo.getName().equals(nombre)) {
+                if(archivo.isDirectory()){
+                    System.out.println("deleting directory");
+                    File [] Dir_contenido = archivo.listFiles();
+                    
+                    for(File Dir_archi : Dir_contenido){
+                        deleteFiles(Dir_archi.getName(), dir + "\\" + archivo.getName());
+                    }
+
+                }
+                
+                System.out.println("Archivo eliminado: " + nombre);
+                archivo.delete();
+                
+            }
+        }
+    }
+    
+    public static void filesSelectedToDelete(ServerSocket s){
+        try{
+            Socket sc = s.accept();
+            BufferedInputStream bis = new BufferedInputStream(sc.getInputStream());
+            DataInputStream dis = new DataInputStream(bis);
+            
+            int totFilesToDelete = dis.readInt();
+            System.out.println("Total to delete: " + totFilesToDelete);
+
+            String currentRoute= new File("").getAbsolutePath();
+            String serverRoute= currentRoute + "/MiUnidad";
+
+            for(int i = 0; i < totFilesToDelete; i++) {
+                deleteFiles(dis.readUTF(), serverRoute);
+            }
+            
+            dis.close();
+        }catch(Exception e){
+            
+        }
+    }
+    
     
     public static void main(String[] args){
         try{
@@ -245,6 +296,10 @@ public class Servidor {
                     case 2:     //muestra la lista de files en el SEREVER
                         System.out.println("Server: Mostrar lista ar archivos");
                         getFilesFromServer(s);
+                        break;
+                    case 3:
+                        System.out.println("Server: delete files");   
+                        filesSelectedToDelete(s);
                         break;
                 }
                 
