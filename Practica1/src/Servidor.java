@@ -167,9 +167,9 @@ public class Servidor {
         
     }
     
-    public static void getFilesFromServer(ServerSocket s){
+    public static void getFilesFromServer(ServerSocket s, String path){
         String currentRoute= new File("").getAbsolutePath();
-        String serverRoute= currentRoute + "/MiUnidad";
+        String serverRoute= currentRoute + "/MiUnidad" + path;
         File directoryServer= new File(serverRoute);
         
         File[] listFilesInServer= directoryServer.listFiles(); 
@@ -188,7 +188,10 @@ public class Servidor {
                 else
                     typeOfFile = "File: ";
                 dos.writeUTF(typeOfFile + listFilesInServer[i].getName());*/
-                dos.writeUTF(listFilesInServer[i].getName());
+                if(listFilesInServer[i].isDirectory())
+                    dos.writeUTF("/" + listFilesInServer[i].getName());
+                else
+                    dos.writeUTF(listFilesInServer[i].getName());
                 dos.flush();
             }
             System.out.println("Sending files of server");
@@ -199,25 +202,12 @@ public class Servidor {
         
     }
     
-    public static void deleteFiles(String nombre, String dir) {
-       
-        System.out.println("name file to delete: " + nombre);
-        File serverDirectory = new File(dir);
-        
-        
-        File[] arrFilesToDelete= serverDirectory.listFiles(); 
-        
-        for(File archivo : arrFilesToDelete) {
-            if(archivo.getName().equals(nombre)) {
-                if(archivo.isDirectory()){
-                    File [] contentDirectory = archivo.listFiles();
-                    
-                    for(File Dir_archi : contentDirectory){
-                        deleteFiles(Dir_archi.getName(), dir + "\\" + archivo.getName());
-                    }
-                }                
-                archivo.delete();                
-            }
+    public static void deleteFiles(String nombre, String dir) { 
+        String filename = new File("").getAbsolutePath() + "/MiUnidad/" + nombre;
+        System.out.println("name file to delete: " + filename);
+        File file = new File(filename);
+        if(file.exists()) {
+            file.delete();
         }
     }
     
@@ -272,9 +262,7 @@ public class Servidor {
                 //DataOutputStream dos = new DataOutputStream(bos);
                 
                 int tipo = -1;
-                tipo = dis.readInt();
-                dis.close();
-                sc.close(); // 
+                tipo = dis.readInt(); 
                 switch(tipo){
                         //case 0 = oprimir boton sendFiles
                     case 0: 
@@ -287,10 +275,14 @@ public class Servidor {
                     case 1:
                         System.out.println("Server: case send files to client");
                         enviar_archivo(s,s2,"MiUnidad");
+                     
+                        
+                        
                         break;
                     case 2:     //muestra la lista de files en el SEREVER
-                        System.out.println("Server: Mostrar lista ar archivos");
-                        getFilesFromServer(s);
+                        String path = dis.readUTF();
+                        System.out.println("Server: Mostrar lista ar archivos de la carpeta" + path);
+                        getFilesFromServer(s, path);
                         break;
                     case 3:     //this case is to delete files
                         System.out.println("Server: delete files");   
@@ -299,6 +291,9 @@ public class Servidor {
                     case 4:
                         break;
                 }
+                
+                dis.close();
+                sc.close();
                 
             } //end For
             

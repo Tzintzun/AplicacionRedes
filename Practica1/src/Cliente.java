@@ -52,10 +52,19 @@ public class Cliente {
             dos.writeInt(i);    //enviamos un 0 al server que significa enviar archivos
             dos.flush();
             bos.flush();
-            dos.close();
-            bos.close();
+            // dos.close();
+            // bos.close();
         } catch(Exception e){
             e.printStackTrace();
+        }
+    }
+    public void setPath(String path) {
+        try {
+            dos.writeUTF(path);
+            dos.flush();
+            bos.flush();
+        } catch (IOException ex) {
+            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     public boolean enviarInfo(File[] f){
