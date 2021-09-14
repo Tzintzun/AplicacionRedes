@@ -240,7 +240,21 @@ public class ViewCliente extends javax.swing.JFrame {
         JFileChooser jfc = new JFileChooser(f);
         jfc.showOpenDialog(null);*/
         cliente.instruccion(1);
-        cliente.recibir_archivo();
+        List<String> filesSelectedToDownload = jListFilesInServer.getSelectedValuesList();
+        try{
+           
+            String path ="";
+            for(String p : subRutas) {
+                    path += p;
+            }
+            cliente.setPath(path);
+            cliente.dos.close();
+            cliente.DownloadFiles(filesSelectedToDownload);
+            
+            cliente.recibir_archivo();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_jButtonDownloadFilesActionPerformed
 
     private void jButtonSelectFilesServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSelectFilesServerActionPerformed

@@ -141,17 +141,30 @@ public class Servidor {
         }
     }
     public static void enviar_archivo(ServerSocket s,ServerSocket s2,String directorio){
-        Compresor c = new Compresor();
-        Date fecha = new Date();
-        String fch = fecha.toString().replace(':','-');
-        
-        File f = c.comprimir(directorio, fch+".zip");
-        
-        System.out.println("Comprimiendo Archivo...");
-        try {
-           
+        try{
             Socket sc = s.accept();
+            DataInputStream dis = new DataInputStream(sc.getInputStream());
+            int numeroArchivos = dis.readInt();
+            System.out.println("Enviando Comprimido");
+            Compresor c = new Compresor();
+            Date fecha = new Date();
+            String fch = fecha.toString().replace(':','-');
+
+            File[] archivos = new File[numeroArchivos];
+
+            for(int i =0;i<numeroArchivos;i++){
+                archivos[i] = new File(".\\MiUnidad\\"+directorio + dis.readUTF());
+            }
+            File f = c.comprimir(archivos, fch+".zip");
+
+            System.out.println("Comprimiendo Archivo...");
+            dis.close();
+
+            sc = s.accept();
             DataOutputStream dos = new DataOutputStream(sc.getOutputStream());
+            
+            System.out.println(f);
+            System.out.println(f.length());
             dos.writeUTF(f.getName());
             dos.flush();
             dos.writeLong(f.length());
@@ -159,12 +172,10 @@ public class Servidor {
             dos.close();
             System.out.println(f.getAbsolutePath());
             enviarArchivo(f,s2.accept());
-            f.delete();
-            
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            f.delete();   
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        
     }
     
     public static void getFilesFromServer(ServerSocket s, String path){
@@ -287,7 +298,9 @@ public class Servidor {
                         break;
                     case 1:
                         System.out.println("Server: case send files to client");
-                        enviar_archivo(s,s2,"MiUnidad");
+                        
+                        String directorio = dis.readUTF();
+                        enviar_archivo(s,s2,directorio);
                      
                         
                         

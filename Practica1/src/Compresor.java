@@ -35,7 +35,7 @@ public class Compresor {
                    FileInputStream archivo = new FileInputStream(f);
                    zip.putNextEntry(new ZipEntry(ruta+f.getName()));
                    while((leido = archivo.read(buffer)) > 0){
-                       System.out.println("Escribiendo...");
+                       //System.out.println("Escribiendo...");
                        zip.write(buffer);
                    }
                    zip.closeEntry();

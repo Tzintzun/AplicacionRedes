@@ -244,7 +244,23 @@ public class Cliente {
             e.printStackTrace();
         }
     }
-    
+    public void DownloadFiles(List<String> archivos)throws IOException{
+        cl = conectar(dir,pto);
+        
+        bos = new BufferedOutputStream(cl.getOutputStream());
+        dos = new DataOutputStream(bos);
+        
+        dos.writeInt(archivos.size());
+        for(String archivo: archivos) {
+            //System.out.println("name archivo:" + archivo);
+            dos.writeUTF(archivo);
+        }
+        dos.flush();
+        
+        System.out.println("Files Downloaded");
+        dos.close();
+        cl.close();
+    }
     public void deleteFiles(List<String> archivos) throws IOException{
         cl = conectar(dir,pto);
         
