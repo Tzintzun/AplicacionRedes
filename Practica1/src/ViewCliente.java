@@ -23,6 +23,8 @@ public class ViewCliente extends javax.swing.JFrame {
     private Cliente cliente = new Cliente();
     private File[] archivos = new File[0];
     private ArrayList<String> subRutas = new ArrayList();
+    private String rutaAbsoluta = "";
+    private String rutaActual="";
     /**
      * Creates new form ViewCliente
      */
@@ -47,6 +49,9 @@ public class ViewCliente extends javax.swing.JFrame {
         listFilesInServer = cliente.getServerArchivos();
         
         DefaultListModel listModel = new DefaultListModel();
+        if(subRutas.size() >=1){
+            listModel.addElement("..\\.");
+        }
         for (int i = 0; i < listFilesInServer.size(); i++) {
             listModel.addElement(listFilesInServer.get(i));
         }
@@ -74,7 +79,6 @@ public class ViewCliente extends javax.swing.JFrame {
         jButtonDownloadFiles = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         jListFilesInServer = new javax.swing.JList<>();
-        jButtonOpenDirectory = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         jLabel1.setText("Drive simulator ");
@@ -128,15 +132,12 @@ public class ViewCliente extends javax.swing.JFrame {
             }
         });
 
-        jScrollPane3.setViewportView(jListFilesInServer);
-
-        jButtonOpenDirectory.setText("mostrar contenido de carpeta");
-        jButtonOpenDirectory.setToolTipText("");
-        jButtonOpenDirectory.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonOpenDirectoryActionPerformed(evt);
+        jListFilesInServer.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jListFilesInServerMouseClicked(evt);
             }
         });
+        jScrollPane3.setViewportView(jListFilesInServer);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -149,11 +150,19 @@ public class ViewCliente extends javax.swing.JFrame {
                 .addComponent(jButtonSelectFilesServer)
                 .addGap(45, 45, 45))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(30, 30, 30)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addGap(204, 204, 204))
+            .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(63, 63, 63)
+                        .addGap(30, 30, 30)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(107, 107, 107)
+                        .addComponent(jButtonSendFiles))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(93, 93, 93)
                         .addComponent(jButtonCreateDirectory)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -163,22 +172,12 @@ public class ViewCliente extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jButtonOpenDirectory)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                    .addComponent(jButtonDownloadFiles)
-                                    .addGap(52, 52, 52))
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                    .addComponent(jButtonDeleteFiles)
-                                    .addGap(86, 86, 86)))))))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel2)
-                .addGap(204, 204, 204))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(107, 107, 107)
-                .addComponent(jButtonSendFiles)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jButtonDeleteFiles)
+                                .addGap(89, 89, 89))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jButtonDownloadFiles)
+                                .addGap(50, 50, 50))))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -192,20 +191,17 @@ public class ViewCliente extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
                     .addComponent(jScrollPane3))
-                .addGap(30, 30, 30)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGap(32, 32, 32)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jButtonSendFiles)
                         .addGap(18, 18, 18)
-                        .addComponent(jButtonCreateDirectory)
-                        .addGap(48, 48, 48))
+                        .addComponent(jButtonCreateDirectory))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButtonOpenDirectory)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButtonDeleteFiles)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButtonDownloadFiles)
-                        .addGap(28, 28, 28))))
+                        .addGap(18, 18, 18)
+                        .addComponent(jButtonDownloadFiles)))
+                .addGap(48, 48, 48))
         );
 
         pack();
@@ -265,7 +261,7 @@ public class ViewCliente extends javax.swing.JFrame {
         }else{
             String path = "";
             for(String p : subRutas) {
-                path += p + "/";
+                path += p;
             }
             List<String> filesSelectedToDelete = jListFilesInServer.getSelectedValuesList();
             for(int i=0; i<filesSelectedToDelete.size(); i++) {
@@ -277,21 +273,48 @@ public class ViewCliente extends javax.swing.JFrame {
             } catch (IOException ex) {
                 System.out.println("Error delete");
             }
+            cliente.instruccion(2);
+            cliente.setPath(path);
+
+            try {
+                showFilesInServer();
+            } catch (IOException ex) {
+                Logger.getLogger(ViewCliente.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }//GEN-LAST:event_jButtonDeleteFilesActionPerformed
-
-    private void jButtonOpenDirectoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonOpenDirectoryActionPerformed
+    private String concatenar(ArrayList<String> rutas){
+        String ruta = "";
+        for(int i = 0;i<rutas.size();i++){
+            ruta = ruta + rutas.get(i);
+        }
+        return ruta;
+    }
+    private void OpenDirectory(){
         if((jListFilesInServer.getSelectedValuesList().isEmpty())){
             JOptionPane.showMessageDialog(null, "Error. Selecciona una carpeta");
         }else{
             String currentDirectory = jListFilesInServer.getSelectedValue();
-            String firstChar = currentDirectory.substring(0, 1);
-            String isDirectory = "/";
-
-            if(firstChar.equals(isDirectory)){
+            String firstChar = currentDirectory.substring(currentDirectory.length() - 1,currentDirectory.length() );
+            String isDirectory = "\\";
+            if(currentDirectory.equals("..\\.")){
                 System.out.println("opening subdirectory ");
+                int ultimo = subRutas.size();
+                subRutas.remove(ultimo-1);
+                rutaAbsoluta = concatenar(subRutas);
                 cliente.instruccion(2);
-                cliente.setPath(jListFilesInServer.getSelectedValue());
+                cliente.setPath(rutaAbsoluta);
+                
+                try {
+                    showFilesInServer();
+                } catch (IOException ex) {
+                    Logger.getLogger(ViewCliente.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }else if(firstChar.equals(isDirectory)){
+                System.out.println("opening subdirectory ");
+                rutaAbsoluta = concatenar(subRutas)+jListFilesInServer.getSelectedValue();
+                cliente.instruccion(2);
+                cliente.setPath(rutaAbsoluta);
                 subRutas.add(jListFilesInServer.getSelectedValue());
                 try {
                     showFilesInServer();
@@ -302,10 +325,12 @@ public class ViewCliente extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(null, "Error. Selecciona una carpeta valida");
             }
         }
-        
-        
-        
-    }//GEN-LAST:event_jButtonOpenDirectoryActionPerformed
+    }
+    private void jListFilesInServerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListFilesInServerMouseClicked
+                if(evt.getClickCount() == 2){
+                    this.OpenDirectory();
+                }
+    }//GEN-LAST:event_jListFilesInServerMouseClicked
 
     /**
      * @param args the command line arguments
@@ -347,7 +372,6 @@ public class ViewCliente extends javax.swing.JFrame {
     private javax.swing.JButton jButtonCreateDirectory;
     private javax.swing.JButton jButtonDeleteFiles;
     private javax.swing.JButton jButtonDownloadFiles;
-    private javax.swing.JButton jButtonOpenDirectory;
     private javax.swing.JButton jButtonSelectFiles;
     private javax.swing.JButton jButtonSelectFilesServer;
     private javax.swing.JButton jButtonSendFiles;

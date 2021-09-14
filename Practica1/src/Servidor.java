@@ -169,7 +169,7 @@ public class Servidor {
     
     public static void getFilesFromServer(ServerSocket s, String path){
         String currentRoute= new File("").getAbsolutePath();
-        String serverRoute= currentRoute + "/MiUnidad" + path;
+        String serverRoute= currentRoute + "\\MiUnidad\\" + path;
         File directoryServer= new File(serverRoute);
         
         File[] listFilesInServer= directoryServer.listFiles(); 
@@ -189,7 +189,7 @@ public class Servidor {
                     typeOfFile = "File: ";
                 dos.writeUTF(typeOfFile + listFilesInServer[i].getName());*/
                 if(listFilesInServer[i].isDirectory())
-                    dos.writeUTF("/" + listFilesInServer[i].getName());
+                    dos.writeUTF( listFilesInServer[i].getName()+"\\");
                 else
                     dos.writeUTF(listFilesInServer[i].getName());
                 dos.flush();
@@ -203,14 +203,27 @@ public class Servidor {
     }
     
     public static void deleteFiles(String nombre, String dir) { 
-        String filename = new File("").getAbsolutePath() + "/MiUnidad/" + nombre;
+        String filename = dir + nombre;
         System.out.println("name file to delete: " + filename);
         File file = new File(filename);
         if(file.exists()) {
+            if(file.isDirectory()){
+                deleteDirectories(file.listFiles());
+            }
             file.delete();
         }
     }
-    
+    public static void deleteDirectories(File[] archivos){
+        
+        for(File f : archivos){
+            if(f.isDirectory()){
+                deleteDirectories(f.listFiles());
+                f.delete();
+            }else{
+                f.delete();
+            }
+        }
+    }
     public static void filesSelectedToDelete(ServerSocket s){
         try{
             Socket sc = s.accept();
@@ -221,7 +234,7 @@ public class Servidor {
             System.out.println("Total to delete: " + totFilesToDelete);
 
             String currentRoute= new File("").getAbsolutePath();
-            String serverRoute= currentRoute + "/MiUnidad";
+            String serverRoute= currentRoute + "\\MiUnidad\\";
 
             for(int i = 0; i < totFilesToDelete; i++) {
                 deleteFiles(dis.readUTF(), serverRoute);
